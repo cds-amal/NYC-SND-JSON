@@ -35,13 +35,13 @@ _progen_2_b10sc = [
 ]
 
 _progenitor1 = [
-    ('word1', 54, 55),
+    ('word', 54, 55),
     ('geographicFeatureType', 55, 66),
     ('horizontalTopologyFlag', 67, 68)
 ]
 
 _progenitor2 = [
-    ('word2', 70, 71),
+    ('word', 70, 71),
     ('geographicFeatureType', 71, 72),
     ('horizontalTopologyFlag', 83, 84)
 ]
@@ -69,9 +69,9 @@ def process(obj, lAttributes, rec):
 
 
 boroughMap = {
-        '1': 'Manhattan',
-        '2': 'Bronx',
-        '3': 'Brooklyn',
-        '4': 'Queens',
-        '5': 'Staten Islannd'
+    '1': 'Manhattan',
+    '2': 'Bronx',
+    '3': 'Brooklyn',
+    '4': 'Queens',
+    '5': 'Staten Island'
 }

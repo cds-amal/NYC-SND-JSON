@@ -3,7 +3,6 @@ import cowdef
 
 
 class B10sc:
-
     def __init__(self, lAttributes, rec):
         cowdef.process(self, lAttributes, rec)
 
@@ -21,7 +20,6 @@ class B10sc:
 
 
 class Progenitor:
-
     def __init__(self, num, rec):
         _p = None
         if num == 1:
@@ -37,15 +35,19 @@ class Progenitor:
         else:
             raise Exception('Unknown Progenitor number')
 
+    def word(self):
+        if self.word == 'E':
+            return 'East'
+        elif self.word == 'W':
+            return 'West'
+        else:
+            raise Exception('Invalid word value: %s' % self.word)
+
 
 class VSam:
 
     def __init__(self, rec):
         cowdef.process(self, cowdef._vsam_keys, rec)
-
-    def __str__(self):
-        keys = sorted(self.__dict__.keys())
-        return '\n'.join(['%s: %s' % (k, self.__dict__[k]) for k in keys])
 
     def borough(self):
         return cowdef.boroughMap[self.boroughCode]
@@ -61,6 +63,19 @@ class SType:
         if self.progenitorCount == '2':
             self.progenitor2 = Progenitor(2, rec)
 
+    def streets(self):
+        names = [{'name': '%s %s %s' % (self.progenitor1.word,
+                                        self.vsam.geographicFeatureName,
+                                        self.progenitor1.b10sc.borough()),
+                  'b10sc': self.progenitor1.b10sc}]
+        if self.progenitor2:
+            names.append({'name': '%s %s %s' % (self.progenitor2.word,
+                                                self.vsam.geographicFeatureName,
+                                                self.progenitor2.b10sc.borough()
+                                                ),
+                          'b10sc': self.progenitor2.b10sc})
+        return names
+
     def to_JSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)
@@ -72,6 +87,10 @@ class NonSType:
         self.vsam = VSam(rec)
         cowdef.process(self, cowdef._type_non_s_keys, rec)
         self.b10sc = B10sc(cowdef._type_non_s_b10sc, rec)
+
+    def streets(self):
+        return [{'name': self.vsam.geographicFeatureName,
+                 'b10sc': self.b10sc}]
 
     def to_JSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
