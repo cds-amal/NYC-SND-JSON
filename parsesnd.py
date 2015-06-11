@@ -12,10 +12,10 @@ def sndFileData():
     geoSupportRelease = header[14:18]
     numberOfRecords = header[18:26]
 
-    print '[%s]' % headerId
-    print '[%s]' % dateFileCreated
-    print '[%s]' % geoSupportRelease
-    print '[%s]' % numberOfRecords
+    # print '[%s]' % headerId
+    # print '[%s]' % dateFileCreated
+    # print '[%s]' % geoSupportRelease
+    # print '[%s]' % numberOfRecords
 
     return dict(
         headerId=headerId,
@@ -43,9 +43,9 @@ for rec in records:
 for k in nons.keys():
     group = sorted(nons[k], key=lambda e: e.primaryStreetNameIndicator)
     geoFeatureType = group[0].geographicFeatureType
-    if geoFeatureType in ['Z', 'X', 'U', 'T', 'S', 'R', 'P', 'O', 'N',
-                          'J', 'I', 'G', 'C', 'B']:
-        continue
+    # if geoFeatureType in ['Z', 'X', 'U', 'T', 'S', 'R', 'P', 'O', 'N',
+    #                       'J', 'I', 'G', 'C', 'B']:
+    #     continue
 
     # useful list to print later
     # if geoFeatureType in ['M', 'H', 'F', 'E', 'D', 'A', '']:
@@ -53,12 +53,11 @@ for k in nons.keys():
 
     # if group[0].geographicFeatureType != '':
     #     continue
-    print k
+    print(k)
     # print json.dumps(group[0].to_JSON())
     for entry in group:
         if entry.primaryStreetNameIndicator == 'P':
-            print '%s %s' % (entry.streets()[0]['name'], entry.vsam.borough())
+            print('{} {}s'.format(entry.streets()[0]['name'], entry.vsam.borough()))
         else:
-            print '\t%s' % entry.streets()[0]['name']
-
+            print('\t{}'.format(entry.streets()[0]['name']))
     print
