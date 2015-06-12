@@ -16,8 +16,8 @@ class STypeTest(unittest.TestCase):
         self.rec = SType(rec)
 
     def test_filler(self):
-        self.assertEqual(self.rec.filler1, "")
-        self.assertEqual(self.rec.filler2, "")
+        self.assertEqual(self.rec.filler1, " " * 15)
+        self.assertEqual(self.rec.filler2, " " * 114)
 
     def test_fullNameLength(self):
         self.assertEqual(self.rec.fullNameLength, "16")
@@ -41,12 +41,13 @@ class STypeTest(unittest.TestCase):
         v = self.rec.vsam
         self.assertEqual(v.boroughCode, "1")
         self.assertEqual(v.filler, "1")
-        self.assertEqual(v.geographicFeatureName, "1 STREET")
+        self.assertEqual(v.geographicFeatureName, 
+                         "   1 STREET                     ")
 
     def test_progenitor1(self):
         p = self.rec.progenitor1
-        self.assertEqual(p.geographicFeatureType, "1170100101")
-        self.assertEqual(p.horizontalTopologyFlag, "")
+        self.assertEqual(p.geographicFeatureType, " ")
+        self.assertEqual(p.horizontalTopologyFlag, " ")
         self.assertEqual(p.word, "E")
 
         b = p.b10sc

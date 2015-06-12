@@ -1,5 +1,6 @@
 import json
 import cowdef
+import pdb
 
 class B10sc:
     def __init__(self, dic, rec):
@@ -7,6 +8,8 @@ class B10sc:
         self.streetCode = cowdef.extract(rec, dic, 'streetCode')
         self.localGroupCode = cowdef.extract(rec, dic, 'localGroupCode')
         self.spellingVariation = cowdef.extract(rec, dic, 'spellingVariation')
+        # if self.boroughCode not in ['1', '2', '3', '4', '5']:
+        #     pdb.set_trace()
 
     def borough(self):
         return cowdef.boroughMap[self.boroughCode]
@@ -19,6 +22,11 @@ class B10sc:
         # borough + 7-digit street code
         return '%s%s%s' % \
             (self.boroughCode, self.streetCode, self.localGroupCode)
+
+    def __str__(self):
+        return '%s%s%s%s' % \
+            (self.boroughCode, self.streetCode, 
+             self.localGroupCode, self.spellingVariation)
 
 
 class Progenitor:
@@ -48,6 +56,10 @@ class Progenitor:
             return 'West'
         else:
             raise Exception('Invalid word value: %s' % self.word)
+
+    def __str__(self):
+        return 'gft:{}, htf:{}'.format(self.geographicFeatureType,
+                                       self.horizontalTopologyFlag)
 
 
 class VSam:
@@ -82,16 +94,17 @@ class SType:
             self.progenitor2 = Progenitor(2, rec)
 
     def streets(self):
-        names = [{'name': '%s %s %s' % (self.progenitor1.word,
-                                        self.vsam.geographicFeatureName,
-                                        self.progenitor1.b10sc.borough()),
-                  'b10sc': self.progenitor1.b10sc}]
+        names = [{'name': '%s %s' % (self.progenitor1.word,
+                                     self.vsam.geographicFeatureName),
+                  'b10sc': self.progenitor1.b10sc,
+                  'trace': str(self.progenitor1)}]
+
         if self.progenitor2:
-            names.append({'name': '%s %s %s' % (self.progenitor2.word,
-                                                self.vsam.geographicFeatureName,
-                                                self.progenitor2.b10sc.borough()
-                                                ),
-                          'b10sc': self.progenitor2.b10sc})
+            names.append({'name': '%s %s' % (self.progenitor2.word,
+                                             self.vsam.geographicFeatureName),
+                          'b10sc': self.progenitor2.b10sc,
+                          'trace': str(self.progenitor2)})
+
         return names
 
     def to_JSON(self):
@@ -103,13 +116,16 @@ class NonSType:
 
     def __init__(self, rec):
         self.vsam = VSam(rec)
+        self.b10sc = B10sc(cowdef._type_non_s_b10sc, rec)
+
         dic = cowdef._type_non_s_keys
+        self.filler1 = cowdef.extract(rec, dic, 'filler1')
+        self.filler2 = cowdef.extract(rec, dic,'filler2')
 
         self.primaryStreetNameIndicator = cowdef.extract(rec, dic,
                                                          'primaryStreetNameIndicator')
         self.principalLocalGroupNameIndicator = cowdef.extract(rec, dic,
                                                                'principalLocalGroupNameIndicator')
-        self.filler1 = cowdef.extract(rec, dic, 'filler1')
         self.numericNameIndicator = cowdef.extract(rec, dic,
                                                    'numericNameIndicator')
         self.geographicFeatureType = cowdef.extract(rec, dic,
@@ -123,14 +139,21 @@ class NonSType:
                                                    'twentyByteStreetName')
         self.horizontalTypologyTypeCode = cowdef.extract(rec, dic,
                                                          'horizontalTypologyTypeCode')
-        self.filler2 = cowdef.extract(rec, dic,'filler2')
 
-        self.b10sc = B10sc(cowdef._type_non_s_b10sc, rec)
+    def borough(self):
+        return self.vsam.borough()
 
     def streets(self):
         return [{'name': self.vsam.geographicFeatureName,
-                 'b10sc': self.b10sc}]
-
+                 'b10sc': self.b10sc,
+                 'trace': 'gft:{}, htf:{}'.format(self.geographicFeatureType,
+                                       self.horizontalTypologyTypeCode)}]
     def to_JSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)
+
+rec = " 15FATHER SPYRIDON MACRIS PARK     VS53734801030    27FATHER SPYRIDON MACRIS PARK                                                                                                                        "
+rec = "11   1 AVENUE                     PF11001001010  N 11   1 AVENUE                                                                                                                                        \n"
+gft = rec[50:51]
+rec = SType(rec) if gft == 'S' else NonSType(rec)
+print (rec.to_JSON())

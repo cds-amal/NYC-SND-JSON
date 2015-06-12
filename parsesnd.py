@@ -1,6 +1,7 @@
 import json
 import pprint
 from cow import SType, NonSType
+from cowdef import isAddressType
 
 
 def sndFileData():
@@ -32,32 +33,27 @@ streets = []
 nons = {}
 for rec in records:
     gft = rec[50:51]
-    entry = SType(rec) if gft == 'S' else NonSType(rec)
+    if gft == 'S':
+        entry = SType(rec) 
+        geoFeatureType = entry.progenitor1.geographicFeatureType
+        if not isAddressType(geoFeatureType):
+            continue
+    else:
+        entry = NonSType(rec)
+        if not isAddressType(entry.geographicFeatureType):
+            continue
 
-    if gft != 'S':
-        nons.setdefault(entry.b10sc.b5sc(), []).append(entry)
-    # streets += entry.streets()
-    # for s in streets:
-    #     print s
+        if entry.primaryStreetNameIndicator == 'V' or \
+            entry.principalLocalGroupNameIndicator == 'S':
+            continue
 
-for k in nons.keys():
-    group = sorted(nons[k], key=lambda e: e.primaryStreetNameIndicator)
-    geoFeatureType = group[0].geographicFeatureType
-    # if geoFeatureType in ['Z', 'X', 'U', 'T', 'S', 'R', 'P', 'O', 'N',
-    #                       'J', 'I', 'G', 'C', 'B']:
-    #     continue
+        geoFeatureType = entry.geographicFeatureType
 
-    # useful list to print later
-    # if geoFeatureType in ['M', 'H', 'F', 'E', 'D', 'A', '']:
-    #     continue
+    for loc in entry.streets():
+        nons.setdefault(loc['b10sc'].b7sc(),[]).append(loc)
 
-    # if group[0].geographicFeatureType != '':
-    #     continue
-    print(k)
-    # print json.dumps(group[0].to_JSON())
-    for entry in group:
-        if entry.primaryStreetNameIndicator == 'P':
-            print('{} {}s'.format(entry.streets()[0]['name'], entry.vsam.borough()))
-        else:
-            print('\t{}'.format(entry.streets()[0]['name']))
-    print
+for k in sorted(nons.keys()):
+    group = sorted(nons[k], key=lambda e: e['name'])
+    for g in group:
+        print ('{}\t{}\t{}\t'.format(k, g['name'], g['b10sc'].borough()), g['trace'])
+    print( '\n')

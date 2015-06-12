@@ -1,4 +1,4 @@
-_type_non_s_b10sc = {
+type_non_s_b10sc = {
     'boroughCode': (36, 37),
     'streetCode': (37, 42),
     'localGroupCode': (42, 44),
@@ -13,10 +13,10 @@ _progen_1_b10sc = {
 }
 
 _progen_2_b10sc = {
-    'boroughCode': (73, 74),
-    'streetCode': (74, 79),
-    'localGroupCode': (79, 81),
-    'spellingVariation': (81, 84)
+    'boroughCode': (72, 73),
+    'streetCode': (73, 78),
+    'localGroupCode': (78, 80),
+    'spellingVariation': (80, 83)
 }
 
 _vsam_keys = {
@@ -36,7 +36,7 @@ _type_s_keys = {
 
 _progenitor1 = {
     'word': (54, 55),
-    'geographicFeatureType': (55, 66),
+    'geographicFeatureType': (55, 56),
     'horizontalTopologyFlag': (67, 68)
 }
 
@@ -61,11 +61,6 @@ _type_non_s_keys = {
 }
 
 
-def extract(rec, dic, key):
-    start, end = dic[key]
-    return rec[start:end].strip()
-
-
 boroughMap = {
     '1': 'Manhattan',
     '2': 'Bronx',
@@ -73,3 +68,38 @@ boroughMap = {
     '4': 'Queens',
     '5': 'Staten Island'
 }
+
+
+stype__geographic_feature_types = {
+    'A': 'Addressable place name',
+    'B': 'Name of bridge',
+    'C': 'Business Improvement Districts',
+    'D': 'Duplicate Address Pseudo-Street name (DAPS)',
+    'E': 'Street is entirely within Edgewater Park',
+    'F': 'Street is partially within Edgewater Park',
+    'G': 'Non-Addressable Place name (NAP) of a complex',
+    'H': 'All house numbers on this street are hyphenated',
+    'I': 'Intersection Name',
+    'J': 'Non-Physical Boundary Features',
+    'M': 'Some house numbers on this street are hyphenated, some ' \
+          'are not',
+    'N': 'NAP of a "stand-alone" geographic feature (not a complex) ' \
+         'or a constituent entity of a complex)',
+    'O': 'Shore Line',
+    'P': 'Pseudo-street name (BEND, CITY LIMIT, DEAD END and their ' \
+         ' aliases)',
+    'R': 'Rail line',
+    'S': 'Front-truncated street name',
+    'T': 'Tunnel',
+    'U': 'Miscellaneous Structures',
+    'X': 'NAP of a constituent entity of a complex Z Ramp'
+}
+
+def isAddressType(featureType):
+    return featureType in ['A', 'E', 'F', 'H', 'M', 'S']
+
+def extract(rec, dic, key):
+    start, end = dic[key]
+    return rec[start:end]#.strip()
+
+

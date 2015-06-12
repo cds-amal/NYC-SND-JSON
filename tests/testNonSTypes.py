@@ -14,20 +14,19 @@ class NonSTypeTest(unittest.TestCase):
               "                                                                      " \
               "                                                            \r\n"
         self.rec = NonSType(rec)
-        print(self.rec.to_JSON())
 
     def test_filler(self):
-        self.assertEqual(self.rec.filler1, "")
-        self.assertEqual(self.rec.filler2, "")
+        self.assertEqual(self.rec.filler1, " " * 2)
+        self.assertEqual(self.rec.filler2, " " * 92)
 
     def test_geographicFeatureType(self):
-        self.assertEqual(self.rec.geographicFeatureType, "")
+        self.assertEqual(self.rec.geographicFeatureType, " ")
 
     def test_horizontalTypologyTypeCode(self):
-        self.assertEqual(self.rec.horizontalTypologyTypeCode, "")
+        self.assertEqual(self.rec.horizontalTypologyTypeCode, " ")
 
     def test_minimumStreetNameLength(self):
-        self.assertEqual(self.rec.minimumStreetNameLength, "")
+        self.assertEqual(self.rec.minimumStreetNameLength, "  ")
 
     def test_primaryStreetNameIndicator(self):
         self.assertEqual(self.rec.primaryStreetNameIndicator, "P")
@@ -36,13 +35,14 @@ class NonSTypeTest(unittest.TestCase):
         self.assertEqual(self.rec.principalLocalGroupNameIndicator, "F")
 
     def test_progenitorFullStreetName(self):
-        self.assertEqual(self.rec.progenitorFullStreetName, "1 AVENUE")
+        self.assertEqual(self.rec.progenitorFullStreetName,
+                         "   1 AVENUE                     ")
 
     def test_progenitorLength(self):
         self.assertEqual(self.rec.progenitorLength, "11")
 
     def test_twentyByteStreetName(self):
-        self.assertEqual(self.rec.twentyByteStreetName, "")
+        self.assertEqual(self.rec.twentyByteStreetName, " " * 20)
 
     def test_numericNameIndicator(self):
         self.assertEqual(self.rec.numericNameIndicator, "N")
@@ -51,7 +51,8 @@ class NonSTypeTest(unittest.TestCase):
         v = self.rec.vsam
         self.assertEqual(v.boroughCode, "1")
         self.assertEqual(v.filler, "1")
-        self.assertEqual(v.geographicFeatureName, "1 AVENUE")
+        self.assertEqual(v.geographicFeatureName,
+                         "   1 AVENUE                     ")
 
     def test_b10sc(self):
         b = self.rec.b10sc
