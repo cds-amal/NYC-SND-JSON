@@ -1,4 +1,4 @@
-type_non_s_b10sc = {
+_type_non_s_b10sc = {
     'boroughCode': (36, 37),
     'streetCode': (37, 42),
     'localGroupCode': (42, 44),
@@ -100,6 +100,6 @@ def isAddressType(featureType):
 
 def extract(rec, dic, key):
     start, end = dic[key]
-    return rec[start:end]#.strip()
+    return rec[start:end]
 
 

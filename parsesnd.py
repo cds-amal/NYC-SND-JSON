@@ -4,8 +4,8 @@ from cow import SType, NonSType
 from cowdef import isAddressType
 
 
-def sndFileData():
-    lines = open('snd15Bcow.txt').readlines()
+def sndFileData(sndFile):
+    lines = open(sndFile).readlines()
     header = lines[0]  # file header
 
     headerId = header[:8]
@@ -26,34 +26,42 @@ def sndFileData():
     ), lines[1:]
 
 
-header, records = sndFileData()
-pprint.pprint(header)
+def processSND(sndFile):
 
-streets = []
-nons = {}
-for rec in records:
-    gft = rec[50:51]
-    if gft == 'S':
-        entry = SType(rec) 
-        geoFeatureType = entry.progenitor1.geographicFeatureType
-        if not isAddressType(geoFeatureType):
+    header, records = sndFileData(sndFile)
+    pprint.pprint(header)
+
+    dSCode2Names = {}
+    for rec in records:
+        gft = rec[50:51]
+        parsedGeoFT = ' '
+
+        if gft == 'S':
+            entry = SType(rec) 
+            parsedGeoFT = entry.progenitor1.geographicFeatureType
+        else:
+            entry = NonSType(rec)
+            parsedGeoFT = entry.geographicFeatureType
+
+            if entry.primaryStreetNameIndicator == 'V' or \
+                entry.principalLocalGroupNameIndicator == 'S':
+                continue
+
+        if not isAddressType(parsedGeoFT):
             continue
-    else:
-        entry = NonSType(rec)
-        if not isAddressType(entry.geographicFeatureType):
-            continue
 
-        if entry.primaryStreetNameIndicator == 'V' or \
-            entry.principalLocalGroupNameIndicator == 'S':
-            continue
+        for loc in entry.streets():
+            dSCode2Names.setdefault(loc['b10sc'].b7sc(),[]).append(loc)
 
-        geoFeatureType = entry.geographicFeatureType
+    for k in sorted(dSCode2Names.keys()):
+        group = sorted(dSCode2Names[k], key=lambda e: e['name'])
+        for g in group:
+            print ('{}\t{}\t{}\t'.format(k, 
+                                         g['name'], 
+                                         g['b10sc'].borough()), 
+                                         g['trace'])
+        print( '\n')
 
-    for loc in entry.streets():
-        nons.setdefault(loc['b10sc'].b7sc(),[]).append(loc)
 
-for k in sorted(nons.keys()):
-    group = sorted(nons[k], key=lambda e: e['name'])
-    for g in group:
-        print ('{}\t{}\t{}\t'.format(k, g['name'], g['b10sc'].borough()), g['trace'])
-    print( '\n')
+if __name__ == '__main__':
+    processSND('snd15Bcow.txt')
