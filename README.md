@@ -4,6 +4,10 @@ After discovering [NYC Streetnames on NYC's Socrata database](https://data.cityo
 immediately converted it to JSON for exploring, doing just enough
 to answer my immediate questions. 
 
+# Requirements
+1. Python3
+2. nose
+
 # Usage
 
 See [parsesnd.py](./parsesnd.py) for an example use
